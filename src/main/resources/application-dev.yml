@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    platform: h2
+  jpa:
+    database: h2
+    show-sql: false
+  h2:
+    console:
+      enabled: true
+resources:
+  directory:
+logging:
+  level:
+    com.myszor.webstore: debug
