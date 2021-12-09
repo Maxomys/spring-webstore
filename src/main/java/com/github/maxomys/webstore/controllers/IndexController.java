@@ -3,12 +3,14 @@ package com.github.maxomys.webstore.controllers;
 import com.github.maxomys.webstore.domain.User;
 import com.github.maxomys.webstore.services.InquiryService;
 import com.github.maxomys.webstore.services.ProductService;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
+@Profile("mvc")
 public class IndexController {
 
     private final int LATEST_NUMBER = 3;

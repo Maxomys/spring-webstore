@@ -6,6 +6,7 @@ import com.github.maxomys.webstore.domain.Product;
 import com.github.maxomys.webstore.domain.User;
 import com.github.maxomys.webstore.services.CategoryService;
 import com.github.maxomys.webstore.services.ProductService;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -24,6 +25,7 @@ import java.util.stream.IntStream;
 
 @Slf4j
 @Controller
+@Profile("mvc")
 public class ProductController {
 
     private final int PAGE_SIZE = 9;

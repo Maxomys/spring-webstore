@@ -1,6 +1,7 @@
 package com.github.maxomys.webstore.api.mappers;
 
 import com.github.maxomys.webstore.api.dtos.UserDto;
+import com.github.maxomys.webstore.domain.Product;
 import com.github.maxomys.webstore.domain.User;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +16,7 @@ public class UserMapper {
             .username(user.getUsername())
             .email(user.getEmail())
             .productIds(user.getProducts().stream()
-                .map(product -> product.getId())
+                .map(Product::getId)
                 .collect(Collectors.toList()))
             .build();
     }

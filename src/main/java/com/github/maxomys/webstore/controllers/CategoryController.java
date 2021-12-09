@@ -3,6 +3,7 @@ package com.github.maxomys.webstore.controllers;
 import com.github.maxomys.webstore.domain.Category;
 import com.github.maxomys.webstore.domain.User;
 import com.github.maxomys.webstore.services.CategoryService;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @Controller
+@Profile("mvc")
 public class CategoryController {
 
     private CategoryService categoryService;

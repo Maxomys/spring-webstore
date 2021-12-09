@@ -3,7 +3,9 @@ package com.github.maxomys.webstore.bootstrap;
 import com.github.maxomys.webstore.auth.UserService;
 import com.github.maxomys.webstore.domain.Category;
 import com.github.maxomys.webstore.domain.Product;
+import com.github.maxomys.webstore.domain.Transaction;
 import com.github.maxomys.webstore.domain.User;
+import com.github.maxomys.webstore.repositories.TransactionRepository;
 import com.github.maxomys.webstore.services.CategoryService;
 import com.github.maxomys.webstore.services.ProductService;
 import org.springframework.context.ApplicationListener;
@@ -13,6 +15,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
+
 @Component
 @Profile("dev")
 public class ProductBootstrap implements ApplicationListener<ContextRefreshedEvent> {
@@ -21,12 +25,14 @@ public class ProductBootstrap implements ApplicationListener<ContextRefreshedEve
     private final CategoryService categoryService;
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+    private final TransactionRepository transactionRepository;
 
-    public ProductBootstrap(ProductService productService, CategoryService categoryService, UserService userService, PasswordEncoder passwordEncoder) {
+    public ProductBootstrap(ProductService productService, CategoryService categoryService, UserService userService, PasswordEncoder passwordEncoder, TransactionRepository transactionRepository) {
         this.productService = productService;
         this.categoryService = categoryService;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
+        this.transactionRepository = transactionRepository;
     }
 
     @Override
@@ -36,9 +42,23 @@ public class ProductBootstrap implements ApplicationListener<ContextRefreshedEve
         User userAdmin = new User();
         userAdmin.setUsername("admin");
         userAdmin.setPassword("a");
-        userAdmin.setEmail("mistrz7losos@live.com");
+        userAdmin.setEmail("test@test.pl");
+
+        //User
+        User user1 = new User();
+        user1.setUsername("user1");
+        user1.setPassword("a");
+        user1.setEmail("test2@test.pl");
+
+        //User
+        User user2 = new User();
+        user2.setUsername("user2");
+        user2.setPassword("a");
+        user2.setEmail("test3@test.pl");
 
         userService.createNewUser(userAdmin);
+        userService.createNewUser(user1);
+        userService.createNewUser(user2);
 
         //Categories
         Category categorySculptures = new Category();
@@ -61,6 +81,7 @@ public class ProductBootstrap implements ApplicationListener<ContextRefreshedEve
         product1.setUser(userAdmin);
         product1.setName("Product 1");
         product1.setPrice(12);
+        product1.setAmountInStock(10);
         product1.setCategory(categoryPaintings);
         product1.setCreatorName("creatorTom");
         product1.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \n" +
@@ -96,6 +117,14 @@ public class ProductBootstrap implements ApplicationListener<ContextRefreshedEve
         product4.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \n" +
                 "                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.");
         productService.saveProduct(product4);
+
+
+        transactionRepository.save(Transaction.builder()
+            .product(product4)
+            .time(new Date())
+            .buyer(user1)
+            .seller(user2)
+            .build());
     }
 
 }

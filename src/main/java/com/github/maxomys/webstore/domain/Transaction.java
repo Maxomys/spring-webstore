@@ -1,29 +1,33 @@
 package com.github.maxomys.webstore.domain;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-
+import java.util.Date;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Image {
+public class Transaction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
-    private String fileName;
-
-    @NotNull
-    private String thumbnailFileName;
+    private Date time;
 
     @ManyToOne
     private Product product;
+
+    @ManyToOne
+    private User buyer;
+
+    @ManyToOne
+    private User seller;
 
 }

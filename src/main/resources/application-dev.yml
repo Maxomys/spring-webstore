@@ -1,14 +1,22 @@
 spring:
   datasource:
-    platform: h2
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=MYSQL;DATABASE_TO_LOWER=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
+    username: sa
+    password: password
   jpa:
-    database: h2
-    show-sql: false
+    database: mysql
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: update
+    defer-datasource-initialization: false
   h2:
     console:
       enabled: true
 resources:
-  directory:
+  directory: C:\Users\Zaphod\Desktop\s\
 logging:
   level:
     com.myszor.webstore: debug
+

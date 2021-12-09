@@ -1,5 +1,7 @@
 package com.github.maxomys.webstore.auth;
 
+import com.github.maxomys.webstore.api.dtos.UserDto;
+import com.github.maxomys.webstore.api.mappers.UserMapper;
 import com.github.maxomys.webstore.domain.User;
 import com.github.maxomys.webstore.exceptions.ResourceNotFoundException;
 import com.github.maxomys.webstore.exceptions.UnableToRemoveUserException;
@@ -19,10 +21,12 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, UserMapper userMapper) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.userMapper = userMapper;
     }
 
     @Override
@@ -56,13 +60,24 @@ public class UserService implements UserDetailsService {
             throw new UsernameAlreadyExistException(String.format("Username %s already exists", user.getUsername()));
         }
 
-        //encrypt password todo check if this is ok
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        //enhance user with admin authority, each user is an admin
         user.setUserRole(ApplicationUserRole.ROLE_ADMIN);
 
         return userRepository.save(user);
+    }
+
+    public UserDto createNewUser(UserDto userDto) {
+        User user = userMapper.userDtoToUser(userDto);
+
+        if (userRepository.findByUsername(user.getUsername()) != null) {
+            throw new UsernameAlreadyExistException(String.format("Username %s already exists", user.getUsername()));
+        }
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setUserRole(ApplicationUserRole.ROLE_ADMIN);
+
+        return userMapper.userToUserDto(userRepository.save(user));
     }
 
     public void deleteUserByUsername(String username) {

@@ -1,6 +1,7 @@
 package com.github.maxomys.webstore.services;
 
 import com.github.maxomys.webstore.domain.Category;
+import com.github.maxomys.webstore.exceptions.ResourceNotFoundException;
 import com.github.maxomys.webstore.repositories.CategoryRepository;
 import org.springframework.stereotype.Service;
 
@@ -28,5 +29,10 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void deleteCategoryById(Long id) {
         categoryRepository.deleteById(id);
+    }
+
+    @Override
+    public Category findById(Long id) {
+        return categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Not found for id: " + id));
     }
 }

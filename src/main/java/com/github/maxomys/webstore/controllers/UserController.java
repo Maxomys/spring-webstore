@@ -2,6 +2,7 @@ package com.github.maxomys.webstore.controllers;
 
 import com.github.maxomys.webstore.auth.UserService;
 import com.github.maxomys.webstore.domain.User;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @Controller
+@Profile("mvc")
 public class UserController {
 
     private final UserService userService;

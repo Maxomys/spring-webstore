@@ -1,9 +1,6 @@
 package com.github.maxomys.webstore.domain;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -11,10 +8,10 @@ import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Entity
-@Getter
-@Setter
-@Builder
+@Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Inquiry {
 
     @Id

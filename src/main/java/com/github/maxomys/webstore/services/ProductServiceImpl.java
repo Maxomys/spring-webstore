@@ -58,7 +58,7 @@ public class ProductServiceImpl implements ProductService {
             throw new RuntimeException("Category not found!");
         }
 
-        return productRepository.findAllByCategoryId(categoryOptional.get().getId() , pageable);
+        return productRepository.findAllByCategoryId(categoryOptional.get().getId(), pageable);
     }
 
     @Override

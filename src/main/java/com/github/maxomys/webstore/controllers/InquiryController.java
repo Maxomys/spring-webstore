@@ -3,6 +3,7 @@ package com.github.maxomys.webstore.controllers;
 import lombok.extern.slf4j.Slf4j;
 import com.github.maxomys.webstore.domain.Inquiry;
 import com.github.maxomys.webstore.services.InquiryService;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @Controller
+@Profile("mvc")
 public class InquiryController {
 
     private InquiryService inquiryService;

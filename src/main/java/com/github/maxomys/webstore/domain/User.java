@@ -1,10 +1,8 @@
 package com.github.maxomys.webstore.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import com.github.maxomys.webstore.auth.ApplicationUserRole;
+import org.hibernate.annotations.Cascade;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,15 +10,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
-@Getter
-@Setter
+@Entity
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
+@Builder
 public class User implements UserDetails {
 
     @Id
@@ -38,6 +34,12 @@ public class User implements UserDetails {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private Set<Product> products = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "buyer")
+    private Set<Transaction> bought = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "seller")
+    private Set<Transaction> sold = new HashSet<>();
 
     @Enumerated(EnumType.STRING)
     ApplicationUserRole userRole;
@@ -73,4 +75,18 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return isEnabled;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return id.equals(user.id) && username.equals(user.username);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, username);
+    }
+
 }
