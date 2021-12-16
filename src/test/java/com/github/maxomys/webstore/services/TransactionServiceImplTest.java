@@ -103,7 +103,7 @@ class TransactionServiceImplTest {
         NewTransactionDto newDto = NewTransactionDto.builder()
                 .productId(1L)
                 .buyerId(1L)
-                .sellerId(1L)
+                .sellerId(2L)
                 .build();
 
         Product product = Product.builder()
@@ -111,13 +111,19 @@ class TransactionServiceImplTest {
                 .amountInStock(1)
                 .build();
 
-        User user = User.builder()
+        User user1 = User.builder()
                 .id(1L)
                 .username("user")
                 .build();
 
+        User user2 = User.builder()
+                .id(2L)
+                .username("user2")
+                .build();
+
         when(productRepository.findById(anyLong())).thenReturn(Optional.of(product));
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user1));
+        when(userRepository.findById(2L)).thenReturn(Optional.of(user2));
 
         TransactionDto savedTransaction = transactionService.saveTransaction(newDto);
         assertEquals(1L, savedTransaction.getProductId());
@@ -128,7 +134,7 @@ class TransactionServiceImplTest {
         NewTransactionDto newDto = NewTransactionDto.builder()
                 .productId(1L)
                 .buyerId(1L)
-                .sellerId(1L)
+                .sellerId(2L)
                 .build();
 
         Product product = Product.builder()
@@ -136,13 +142,19 @@ class TransactionServiceImplTest {
                 .amountInStock(0)
                 .build();
 
-        User user = User.builder()
+        User user1 = User.builder()
                 .id(1L)
                 .username("user")
                 .build();
 
+        User user2 = User.builder()
+                .id(2L)
+                .username("user2")
+                .build();
+
         when(productRepository.findById(anyLong())).thenReturn(Optional.of(product));
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user1));
+        when(userRepository.findById(2L)).thenReturn(Optional.of(user2));
 
         assertThrows(NotInStockException.class, () -> transactionService.saveTransaction(newDto));
     }
