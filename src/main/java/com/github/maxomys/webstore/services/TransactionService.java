@@ -2,8 +2,6 @@ package com.github.maxomys.webstore.services;
 
 import com.github.maxomys.webstore.api.dtos.NewTransactionDto;
 import com.github.maxomys.webstore.api.dtos.TransactionDto;
-import com.github.maxomys.webstore.domain.Transaction;
-import com.github.maxomys.webstore.domain.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

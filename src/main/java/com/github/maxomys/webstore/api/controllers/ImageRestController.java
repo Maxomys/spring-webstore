@@ -15,12 +15,12 @@ public class ImageRestController {
     private final ImageService imageService;
     private final ProductService productService;
 
-    @GetMapping(value = "/image/{imageId}", produces = "image/jpg")
+    @GetMapping(value = "/api/image/{imageId}", produces = "image/jpg")
     public FileSystemResource renderImageByImageId(@PathVariable Long imageId) {
         return imageService.getImageById(imageId);
     }
 
-    @PostMapping("/products/{productId}/image")
+    @PostMapping("/api/product/{productId}/image")
     @ResponseStatus(HttpStatus.CREATED)
     public void handleImagePost(@PathVariable Long productId, @RequestParam("imagefile") MultipartFile multipartFile) {
         imageService.saveImage(productId, multipartFile);

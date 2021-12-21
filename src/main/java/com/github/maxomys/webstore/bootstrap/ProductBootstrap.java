@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 
 @Component
-@Profile("dev")
+@Profile("!mysql")
 public class ProductBootstrap implements ApplicationListener<ContextRefreshedEvent> {
 
     private final ProductService productService;
