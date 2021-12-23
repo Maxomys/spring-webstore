@@ -20,6 +20,8 @@ public interface ProductService {
 
     Product saveProduct(Product product);
 
+    Product updateProduct(Product product);
+
     void deleteById(Long id);
 
     Product addRequestToProduct(Product product, String remoteAddress);

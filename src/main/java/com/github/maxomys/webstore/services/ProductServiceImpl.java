@@ -8,6 +8,7 @@ import com.github.maxomys.webstore.repositories.ProductRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,6 +76,22 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product saveProduct(Product product) {
         return productRepository.save(product);
+    }
+
+    @Override
+    public Product updateProduct(Product product) {
+        Optional<Product> productOptional = productRepository.findById(product.getId());
+
+        if (productOptional.isEmpty()) {
+            return saveProduct(product);
+        }
+
+        Product fetchedProduct = productOptional.get();
+        fetchedProduct.setName(product.getName());
+        fetchedProduct.setPrice(product.getPrice());
+        fetchedProduct.setAmountInStock(product.getAmountInStock());
+
+        return productRepository.save(fetchedProduct);
     }
 
     @Override

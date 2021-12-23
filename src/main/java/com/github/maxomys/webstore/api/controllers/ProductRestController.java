@@ -42,4 +42,9 @@ public class ProductRestController {
         productService.deleteById(productId);
     }
 
+    @PutMapping
+    public void updateProduct(ProductDto productDto) {
+        productService.updateProduct(productMapper.productDtoToProduct(productDto));
+    }
+
 }

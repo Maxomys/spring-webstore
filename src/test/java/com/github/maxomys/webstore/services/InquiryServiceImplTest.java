@@ -11,7 +11,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.HashSet;
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class InquiryServiceImplTest {
@@ -26,18 +31,19 @@ class InquiryServiceImplTest {
     EmailService emailService;
 
     @InjectMocks
-    InquiryService inquiryService;
+    InquiryServiceImpl inquiryService;
 
     @BeforeEach
     void setUp() {
     }
 
     @Test
-    void saveInquiry() {
+    void saveInquiryTest() {
         Product product = Product.builder()
                 .id(1L)
                 .amountInStock(1)
                 .description("product")
+                .inquiries(new HashSet<>())
                 .build();
 
         Inquiry inquiry = Inquiry.builder()
@@ -45,11 +51,18 @@ class InquiryServiceImplTest {
                 .product(product)
                 .build();
 
+        when(productRepository.findById(anyLong())).thenReturn(Optional.of(product));
 
+        inquiryService.saveInquiry(inquiry);
+
+        assertTrue(product.getInquiries().size() > 0);
     }
 
     @Test
-    void getInquiryById() {
+    void getInquiryByIdExceptionTest() {
+        when(inquiryRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> inquiryService.getInquiryById(1L));
     }
 
 }
