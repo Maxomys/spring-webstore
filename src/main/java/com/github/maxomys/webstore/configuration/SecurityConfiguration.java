@@ -64,8 +64,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
                     .clearAuthentication(true)
                     .invalidateHttpSession(true)
-                    .deleteCookies("JSESSIONID", "remember-me")
-                    .logoutSuccessUrl("/login");
+                    .deleteCookies("JSESSIONID", "remember-me");
     }
 
     @Bean

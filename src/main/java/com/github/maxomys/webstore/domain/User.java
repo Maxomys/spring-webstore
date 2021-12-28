@@ -13,7 +13,8 @@ import javax.validation.constraints.NotNull;
 import java.util.*;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
