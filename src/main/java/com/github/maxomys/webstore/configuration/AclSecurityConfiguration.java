@@ -1,7 +1,8 @@
 package com.github.maxomys.webstore.configuration;
 
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.ehcache.EhCacheFactoryBean;
+import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
@@ -11,39 +12,56 @@ import org.springframework.security.acls.domain.*;
 import org.springframework.security.acls.jdbc.BasicLookupStrategy;
 import org.springframework.security.acls.jdbc.JdbcMutableAclService;
 import org.springframework.security.acls.jdbc.LookupStrategy;
-import org.springframework.security.acls.model.AclCache;
+import org.springframework.security.acls.model.MutableAclService;
 import org.springframework.security.acls.model.PermissionGrantingStrategy;
-import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.sql.DataSource;
 
 @Configuration
-public class AclSecurityConfiguration extends GlobalMethodSecurityConfiguration {
+public class AclSecurityConfiguration {
+
+    @Autowired
+    DataSource dataSource;
 
     @Bean
-    public MethodSecurityExpressionHandler defaultMethodSecurityExpressionHandler(DataSource dataSource, AclCache aclCache) {
+    public MethodSecurityExpressionHandler defaultMethodSecurityExpressionHandler() {
         DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
-        AclPermissionEvaluator aclPermissionEvaluator = new AclPermissionEvaluator(aclService(dataSource, aclCache));
+        AclPermissionEvaluator aclPermissionEvaluator = new AclPermissionEvaluator(aclService());
         expressionHandler.setPermissionEvaluator(aclPermissionEvaluator);
         return expressionHandler;
     }
 
     @Bean
-    public JdbcMutableAclService aclService(DataSource dataSource, AclCache aclCache) {
-        return new JdbcMutableAclService(dataSource, lookupStrategy(dataSource, aclCache), aclCache);
+    public MutableAclService aclService() {
+        return new JdbcMutableAclService(dataSource, lookupStrategy(), aclCache());
     }
 
     @Bean
-    public LookupStrategy lookupStrategy(DataSource dataSource, AclCache aclCache) {
-        return new BasicLookupStrategy(dataSource, aclCache, aclAuthorizationStrategy(), new ConsoleAuditLogger());
+    public LookupStrategy lookupStrategy() {
+        return new BasicLookupStrategy(dataSource, aclCache(), aclAuthorizationStrategy(), new ConsoleAuditLogger());
     }
 
     @Bean
-    AclCache aclCache(CacheManager cacheManager) {
-        Cache cache = cacheManager.getCache("acl_cache");
-        return new SpringCacheBasedAclCache(cache, permissionGrantingStrategy(), aclAuthorizationStrategy());
+    public EhCacheManagerFactoryBean aclCacheManager() {
+        return new EhCacheManagerFactoryBean();
+    }
 
+    @Bean
+    public EhCacheFactoryBean aclEhCacheFactoryBean() {
+        EhCacheFactoryBean ehCacheFactoryBean = new EhCacheFactoryBean();
+        ehCacheFactoryBean.setCacheManager(aclCacheManager().getObject());
+        ehCacheFactoryBean.setCacheName("aclCache");
+        return ehCacheFactoryBean;
+    }
+
+    @Bean
+    public EhCacheBasedAclCache aclCache() {
+        return new EhCacheBasedAclCache(
+                aclEhCacheFactoryBean().getObject(),
+                permissionGrantingStrategy(),
+                aclAuthorizationStrategy()
+        );
     }
 
     @Bean
