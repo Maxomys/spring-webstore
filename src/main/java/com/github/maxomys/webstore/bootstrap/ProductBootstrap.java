@@ -7,10 +7,12 @@ import com.github.maxomys.webstore.domain.Transaction;
 import com.github.maxomys.webstore.domain.User;
 import com.github.maxomys.webstore.repositories.TransactionRepository;
 import com.github.maxomys.webstore.services.CategoryService;
+import com.github.maxomys.webstore.services.PermissionService;
 import com.github.maxomys.webstore.services.ProductService;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,13 +28,15 @@ public class ProductBootstrap implements ApplicationListener<ContextRefreshedEve
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final TransactionRepository transactionRepository;
+    private final PermissionService permissionService;
 
-    public ProductBootstrap(ProductService productService, CategoryService categoryService, UserService userService, PasswordEncoder passwordEncoder, TransactionRepository transactionRepository) {
+    public ProductBootstrap(ProductService productService, CategoryService categoryService, UserService userService, PasswordEncoder passwordEncoder, TransactionRepository transactionRepository, PermissionService permissionService) {
         this.productService = productService;
         this.categoryService = categoryService;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
         this.transactionRepository = transactionRepository;
+        this.permissionService = permissionService;
     }
 
     @Override
@@ -87,6 +91,7 @@ public class ProductBootstrap implements ApplicationListener<ContextRefreshedEve
         product1.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \n" +
                 "                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.");
         productService.saveProduct(product1);
+//        permissionService.addPermission("admin", product1.getClass(), product1.getId(), BasePermission.READ);
 
         Product product2 = new Product();
         product2.setUser(userAdmin);
