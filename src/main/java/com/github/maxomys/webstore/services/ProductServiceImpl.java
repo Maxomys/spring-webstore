@@ -7,6 +7,7 @@ import com.github.maxomys.webstore.repositories.CategoryRepository;
 import com.github.maxomys.webstore.repositories.ProductRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,6 +51,12 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Page<Product> getProductsPaginated(Pageable pageable) {
         return productRepository.findAll(pageable);
+    }
+
+    @Override
+    @PostFilter("hasPermission(filterObject, 'READ')")
+    public List<Product> getAllProductsForUser() {
+        return productRepository.findAll();
     }
 
     @Override

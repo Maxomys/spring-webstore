@@ -26,6 +26,13 @@ public class ProductRestController {
             .collect(Collectors.toList());
     }
 
+    @GetMapping("")
+    public List<ProductDto> getAllProductsForUser() {
+        return productService.getAllProductsForUser().stream()
+            .map(productMapper::productToProductDto)
+            .collect(Collectors.toList());
+    }
+
     @GetMapping("/{productId}")
     public ProductDto getProductById(@PathVariable Long productId) {
         return productMapper.productToProductDto(productService.findById(productId));

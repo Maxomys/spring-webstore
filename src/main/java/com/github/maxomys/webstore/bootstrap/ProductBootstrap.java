@@ -13,10 +13,17 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.security.acls.domain.BasePermission;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 
 @Component
@@ -42,6 +49,9 @@ public class ProductBootstrap implements ApplicationListener<ContextRefreshedEve
     @Override
     @Transactional
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
+        Authentication authentication = new AnonymousAuthenticationToken("key", "anon", Collections.singleton(new SimpleGrantedAuthority("ROLE_ANONYMOUS")));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
         //User
         User userAdmin = new User();
         userAdmin.setUsername("admin");
@@ -91,7 +101,8 @@ public class ProductBootstrap implements ApplicationListener<ContextRefreshedEve
         product1.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \n" +
                 "                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.");
         productService.saveProduct(product1);
-//        permissionService.addPermission("admin", product1.getClass(), product1.getId(), BasePermission.READ);
+        permissionService.addPermission("admin", product1.getClass(), product1.getId(), BasePermission.ADMINISTRATION);
+        permissionService.addPermission("user1", product1.getClass(), product1.getId(), BasePermission.READ);
 
         Product product2 = new Product();
         product2.setUser(userAdmin);
@@ -102,6 +113,7 @@ public class ProductBootstrap implements ApplicationListener<ContextRefreshedEve
         product2.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \n" +
                 "                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.");
         productService.saveProduct(product2);
+        permissionService.addPermission("admin", product2.getClass(), product2.getId(), BasePermission.ADMINISTRATION);
 
         Product product3 = new Product();
         product3.setUser(userAdmin);
@@ -112,6 +124,8 @@ public class ProductBootstrap implements ApplicationListener<ContextRefreshedEve
         product3.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \n" +
                 "                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.");
         productService.saveProduct(product3);
+        permissionService.addPermission("admin", product3.getClass(), product3.getId(), BasePermission.ADMINISTRATION);
+        permissionService.addPermission("user1", product3.getClass(), product3.getId(), BasePermission.READ);
 
         Product product4 = new Product();
         product4.setUser(userAdmin);
@@ -122,6 +136,7 @@ public class ProductBootstrap implements ApplicationListener<ContextRefreshedEve
         product4.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \n" +
                 "                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.");
         productService.saveProduct(product4);
+        permissionService.addPermission("admin", product4.getClass(), product4.getId(), BasePermission.ADMINISTRATION);
 
 
         transactionRepository.save(Transaction.builder()

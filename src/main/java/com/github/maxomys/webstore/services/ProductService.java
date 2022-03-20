@@ -14,6 +14,8 @@ public interface ProductService {
 
     Page<Product> getProductsPaginated(Pageable pageable);
 
+    List<Product> getAllProductsForUser();
+
     Page<Product> getProductsByCategoryIdPaginated(Long categoryId, Pageable pageable);
 
     Product findById(Long id);
