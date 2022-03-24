@@ -50,7 +50,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    protected void configure(AuthenticationManagerBuilder auth) {
 
         auth.authenticationProvider(daoAuthenticationProvider());
     }
@@ -65,6 +65,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .antMatchers(HttpMethod.GET, "/").permitAll()
                     .antMatchers(HttpMethod.GET, "/admin/**").hasRole("ADMIN")
                     .antMatchers(HttpMethod.POST, "/admin/**").hasRole("ADMIN")
+                    .antMatchers(HttpMethod.PUT, "/admin/**").hasRole("ADMIN")
                 .and()
                 .formLogin().permitAll()
                 .and()

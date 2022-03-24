@@ -15,14 +15,12 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 
@@ -37,7 +35,8 @@ public class ProductBootstrap implements ApplicationListener<ContextRefreshedEve
     private final TransactionRepository transactionRepository;
     private final PermissionService permissionService;
 
-    public ProductBootstrap(ProductService productService, CategoryService categoryService, UserService userService, PasswordEncoder passwordEncoder, TransactionRepository transactionRepository, PermissionService permissionService) {
+    public ProductBootstrap(ProductService productService, CategoryService categoryService, UserService userService,
+                            PasswordEncoder passwordEncoder, TransactionRepository transactionRepository, PermissionService permissionService) {
         this.productService = productService;
         this.categoryService = categoryService;
         this.userService = userService;
@@ -137,6 +136,7 @@ public class ProductBootstrap implements ApplicationListener<ContextRefreshedEve
                 "                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.");
         productService.saveProduct(product4);
         permissionService.addPermission("admin", product4.getClass(), product4.getId(), BasePermission.ADMINISTRATION);
+        permissionService.addPermission("user1", product4.getClass(), product4.getId(), BasePermission.WRITE);
 
 
         transactionRepository.save(Transaction.builder()

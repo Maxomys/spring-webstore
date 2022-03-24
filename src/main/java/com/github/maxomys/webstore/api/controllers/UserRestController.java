@@ -1,5 +1,6 @@
 package com.github.maxomys.webstore.api.controllers;
 
+import com.github.maxomys.webstore.auth.ApplicationUserRole;
 import lombok.RequiredArgsConstructor;
 import com.github.maxomys.webstore.api.dtos.UserDto;
 import com.github.maxomys.webstore.api.mappers.UserMapper;
@@ -14,7 +15,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
 public class UserRestController {
-    
+
     private final UserService userService;
 
     private final UserMapper userMapper;
@@ -22,7 +23,13 @@ public class UserRestController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UserDto createUser(@RequestBody UserDto dto) {
-        return userService.createNewUser(dto);
+        return userService.createNewUser(dto, ApplicationUserRole.ROLE_USER);
+    }
+
+    @PostMapping("/admin")
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserDto createAdminUser(@RequestBody UserDto dto) {
+        return userService.createNewUser(dto, ApplicationUserRole.ROLE_ADMIN);
     }
 
     @GetMapping("/all")

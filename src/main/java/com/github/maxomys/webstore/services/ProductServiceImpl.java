@@ -5,28 +5,27 @@ import com.github.maxomys.webstore.domain.Product;
 import com.github.maxomys.webstore.exceptions.ResourceNotFoundException;
 import com.github.maxomys.webstore.repositories.CategoryRepository;
 import com.github.maxomys.webstore.repositories.ProductRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.acls.domain.BasePermission;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final ImageService imageService;
-
-    public ProductServiceImpl(ProductRepository productRepository, CategoryRepository categoryRepository, ImageService imageService) {
-        this.productRepository = productRepository;
-        this.categoryRepository = categoryRepository;
-        this.imageService = imageService;
-    }
+    private final PermissionService permissionService;
 
     @Override
     public List<Product> getProducts() {
@@ -54,9 +53,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    @PostFilter("hasPermission(filterObject, 'READ')")
-    public List<Product> getAllProductsForUser() {
-        return productRepository.findAll();
+    public List<Product> getAllProductsForCurrentUser() {
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        return productRepository.findAllByUser_Username(name);
     }
 
     @Override
@@ -82,10 +81,13 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product saveProduct(Product product) {
-        return productRepository.save(product);
+        Product savedProduct = productRepository.save(product);
+        permissionService.addPermissionForCurrentUser(product.getClass(), product.getId(), BasePermission.ADMINISTRATION);
+        return savedProduct;
     }
 
     @Override
+    @PreAuthorize("hasPermission(#product, 'WRITE')")
     public Product updateProduct(Product product) {
         Optional<Product> productOptional = productRepository.findById(product.getId());
 

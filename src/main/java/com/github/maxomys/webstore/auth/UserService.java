@@ -67,7 +67,7 @@ public class UserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
-    public UserDto createNewUser(UserDto userDto) {
+    public UserDto createNewUser(UserDto userDto, ApplicationUserRole role) {
         User user = userMapper.userDtoToUser(userDto);
 
         if (userRepository.findByUsername(user.getUsername()) != null) {
@@ -75,7 +75,7 @@ public class UserService implements UserDetailsService {
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setUserRole(ApplicationUserRole.ROLE_ADMIN);
+        user.setUserRole(role);
 
         return userMapper.userToUserDto(userRepository.save(user));
     }

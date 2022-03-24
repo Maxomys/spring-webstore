@@ -2,6 +2,7 @@ package com.github.maxomys.webstore.services;
 
 import com.github.maxomys.webstore.api.dtos.UserDto;
 import com.github.maxomys.webstore.api.mappers.UserMapper;
+import com.github.maxomys.webstore.auth.ApplicationUserRole;
 import com.github.maxomys.webstore.auth.UserService;
 import com.github.maxomys.webstore.domain.User;
 import com.github.maxomys.webstore.repositories.UserRepository;
@@ -47,7 +48,7 @@ class UserServiceTest {
         ArgumentCaptor<User> userArgumentCaptor = ArgumentCaptor.forClass(User.class);
         when(userRepository.save(any(User.class))).thenReturn(userMapper.userDtoToUser(userDto));
 
-        UserDto savedUserDto = userService.createNewUser(userDto);
+        UserDto savedUserDto = userService.createNewUser(userDto, ApplicationUserRole.ROLE_USER);
 
         verify(userRepository).save(userArgumentCaptor.capture());
         assertNotNull(userArgumentCaptor.getValue().getPassword());
