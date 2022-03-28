@@ -8,8 +8,10 @@ import com.github.maxomys.webstore.repositories.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.acls.AclPermissionEvaluator;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -104,6 +106,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @PreAuthorize("hasPermission(@productRepository.findById(#id).orElseThrow(), 'WRITE')")
     public void deleteById(Long id) {
         imageService.deleteImagesByProductId(id);
 
