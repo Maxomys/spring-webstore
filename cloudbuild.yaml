@@ -25,5 +25,5 @@ steps:
       - 'gcr.io/$PROJECT_ID/webstore:$COMMIT_SHA'
       - '--region'
       - 'europe-north1'
-  images:
-    - 'gcr.io/$PROJECT_ID/webstore:$COMMIT_SHA'
+images:
+  - 'gcr.io/$PROJECT_ID/webstore:$COMMIT_SHA'
