@@ -1,0 +1,29 @@
+steps:
+  - name: maven:3-openjdk-11
+    entrypoint: mvn
+    args: [ 'test' ]
+  - name: maven:3-openjdk-11
+    entrypoint: mvn
+    args: [ "package", "-Dmaven.test.skip=true" ]
+
+  # Build
+  - name: gcr.io/cloud-builders/docker
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/webstore:$COMMIT_SHA', '--build-arg=JAR_FILE=target/webstore.jar', '.']
+
+  # Push to registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [ 'push', 'gcr.io/$PROJECT_ID/webstore:$COMMIT_SHA' ]
+
+  # Deploy to cloud run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'webstore'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/webstore:$COMMIT_SHA'
+      - '--region'
+      - 'europe-north1'
+  images:
+    - 'gcr.io/$PROJECT_ID/webstore:$COMMIT_SHA'
