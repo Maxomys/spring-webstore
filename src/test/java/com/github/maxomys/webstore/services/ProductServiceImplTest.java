@@ -1,17 +1,27 @@
 package com.github.maxomys.webstore.services;
 
+import com.github.maxomys.webstore.api.dtos.ProductDto;
+import com.github.maxomys.webstore.api.mappers.ProductMapper;
+import com.github.maxomys.webstore.api.mappers.ProductMapperM;
+import com.github.maxomys.webstore.api.mappers.ProductMapperMImpl;
+import com.github.maxomys.webstore.domain.Category;
 import com.github.maxomys.webstore.domain.Product;
 import com.github.maxomys.webstore.exceptions.ResourceNotFoundException;
 import com.github.maxomys.webstore.repositories.CategoryRepository;
 import com.github.maxomys.webstore.repositories.ProductRepository;
+import com.github.maxomys.webstore.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.HashSet;
 import java.util.List;
@@ -23,14 +33,21 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({MockitoExtension.class, SpringExtension.class})
+@ContextConfiguration(classes = {ProductMapperMImpl.class})
 class ProductServiceImplTest {
+
+    @Autowired
+    ProductMapperMImpl productMapper;
 
     @Mock
     ProductRepository productRepository;
 
     @Mock
     CategoryRepository categoryRepository;
+
+    @Mock
+    UserRepository userRepository;
 
 //    @Mock
 //    ImageService imageService;
@@ -42,7 +59,7 @@ class ProductServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        productService = new ProductServiceImpl(productRepository, categoryRepository, null, null);
+        productService = new ProductServiceImpl(productRepository, categoryRepository, userRepository, null, null, productMapper);
     }
 
     @Test
@@ -57,10 +74,13 @@ class ProductServiceImplTest {
 
     @Test
     void findById() {
-        Product product = Product.builder().id(1L).build();
+        Product product = Product.builder()
+                .id(1L)
+                .build();
+
         when(productRepository.findById(anyLong())).thenReturn(Optional.of(product));
 
-        Product foundProduct = productService.findById(1L);
+        ProductDto foundProduct = productService.findById(1L);
 
         assertEquals(1, foundProduct.getId());
     }
@@ -75,15 +95,18 @@ class ProductServiceImplTest {
     @Test
     void updateProduct() {
         Product foundProduct = Product.builder().id(2L).build();
-        Product newProduct = Product.builder()
+        ProductDto newProduct = ProductDto.builder()
                 .id(2L)
                 .name("new")
                 .price(33)
                 .amountInStock(13)
+                .categoryId(1L)
                 .build();
         ArgumentCaptor<Product> productCaptor = ArgumentCaptor.forClass(Product.class);
 
         when(productRepository.findById(anyLong())).thenReturn(Optional.of(foundProduct));
+        when(categoryRepository.findById(anyLong())).thenReturn(Optional.of(new Category()));
+        when(productRepository.save(any(Product.class))).thenReturn(foundProduct);
 
         productService.updateProduct(newProduct);
 

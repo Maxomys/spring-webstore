@@ -21,20 +21,18 @@ public class InquiryRestController {
 
     @GetMapping("/all")
     public List<InquiryDto> getAllInquiries() {
-        return inquiryService.getInquiries().stream()
-            .map(inquiryMapper::inquiryToInquiryDto)
-            .collect(Collectors.toList());
+        return inquiryService.getInquiries();
     }
 
     @GetMapping("/{inquiryId}")
     public InquiryDto getInquiryById(@PathVariable Long inquiryId) {
-        return inquiryMapper.inquiryToInquiryDto(inquiryService.getInquiryById(inquiryId));
+        return inquiryService.getInquiryById(inquiryId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void createInquiry(@RequestBody InquiryDto inquiryDto) {
-        inquiryService.saveInquiry(inquiryMapper.inquiryDtoToInquiry(inquiryDto));
+        inquiryService.saveInquiry(inquiryDto);
     }
 
     @DeleteMapping("/{inquiryId}")

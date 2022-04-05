@@ -1,31 +1,30 @@
 package com.github.maxomys.webstore.services;
 
+import com.github.maxomys.webstore.api.dtos.InquiryDto;
+import com.github.maxomys.webstore.api.mappers.InquiryMapper;
 import com.github.maxomys.webstore.domain.Inquiry;
 import com.github.maxomys.webstore.domain.Product;
 import com.github.maxomys.webstore.exceptions.ResourceNotFoundException;
 import com.github.maxomys.webstore.repositories.InquiryRepository;
 import com.github.maxomys.webstore.repositories.ProductRepository;
-import org.springframework.mail.javamail.JavaMailSender;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class InquiryServiceImpl implements InquiryService {
 
     private final ProductRepository productRepository;
     private final InquiryRepository inquiryRepository;
     private final EmailService emailService;
+    private final InquiryMapper inquiryMapper;
 
-    public InquiryServiceImpl(ProductRepository productRepository, InquiryRepository inquiryRepository, EmailService emailService) {
-        this.productRepository = productRepository;
-        this.inquiryRepository = inquiryRepository;
-        this.emailService = emailService;
-    }
 
 //    @Override
 //    public void saveInquiry(Inquiry inquiry) {
@@ -43,13 +42,14 @@ public class InquiryServiceImpl implements InquiryService {
 
     @Override
     @Transactional
-    public void saveInquiry(Inquiry inquiry) {
-        inquiry.setCreatedOn(new Date());
-        Long productId = inquiry.getProduct().getId();
+    public void saveInquiry(InquiryDto dto) {
+        Inquiry inquiry = inquiryMapper.inquiryDtoToInquiry(dto);
 
-        Product product = productRepository.findById(productId).orElseThrow(() -> {
-            throw new ResourceNotFoundException("Product not found for id: " + productId);
-        });
+        Product product = productRepository.findById(dto.getProductId())
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found for id: " + dto.getProductId()));
+
+        inquiry.setProduct(product);
+        inquiry.setCreatedOn(new Date());
 
         product.getInquiries().add(inquiry);
 
@@ -57,19 +57,22 @@ public class InquiryServiceImpl implements InquiryService {
     }
 
     @Override
-    public Inquiry getInquiryById(Long inquiryId) {
+    public InquiryDto getInquiryById(Long inquiryId) {
         Optional<Inquiry> inquiryOptional = inquiryRepository.findById(inquiryId);
 
         if (!inquiryOptional.isPresent()) {
             throw new RuntimeException("Inquiry not Found!");
         }
 
-        return inquiryOptional.get();
+        return inquiryMapper.inquiryToInquiryDto(inquiryOptional.get());
     }
 
     @Override
-    public List<Inquiry> getInquiries() {
-        return inquiryRepository.findAll();
+    public List<InquiryDto> getInquiries() {
+        return inquiryRepository.findAll()
+                .stream()
+                .map(inquiryMapper::inquiryToInquiryDto)
+                .collect(Collectors.toList());
     }
 
     @Override

@@ -1,17 +1,18 @@
 package com.github.maxomys.webstore.services;
 
+import com.github.maxomys.webstore.api.dtos.ProductDto;
+import com.github.maxomys.webstore.api.mappers.ProductMapper;
+import com.github.maxomys.webstore.api.mappers.ProductMapperM;
 import com.github.maxomys.webstore.domain.Category;
 import com.github.maxomys.webstore.domain.Product;
 import com.github.maxomys.webstore.exceptions.ResourceNotFoundException;
 import com.github.maxomys.webstore.repositories.CategoryRepository;
 import com.github.maxomys.webstore.repositories.ProductRepository;
+import com.github.maxomys.webstore.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.PermissionEvaluator;
-import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.acls.AclPermissionEvaluator;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,12 +28,17 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
     private final ImageService imageService;
     private final PermissionService permissionService;
+    private final ProductMapperM productMapper;
 
     @Override
-    public List<Product> getProducts() {
-        return productRepository.findAll();
+    public List<ProductDto> getProducts() {
+        return productRepository.findAll()
+                .stream()
+                .map(productMapper::productToProductDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -55,9 +62,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> getAllProductsForCurrentUser() {
+    public List<ProductDto> getAllProductsForCurrentUser() {
         String name = SecurityContextHolder.getContext().getAuthentication().getName();
-        return productRepository.findAllByUser_Username(name);
+        return productRepository.findAllByUser_Username(name)
+                .stream()
+                .map(productMapper::productToProductDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -71,14 +81,32 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product findById(Long id) {
+    public ProductDto findById(Long id) {
         Optional<Product> productOptional = productRepository.findById(id);
 
         if (!productOptional.isPresent()) {
             throw new ResourceNotFoundException("Product not found!");
         }
 
-        return productOptional.get();
+        return productMapper.productToProductDto(productOptional.get());
+    }
+
+    @Override
+    public ProductDto saveProduct(ProductDto dto) {
+        Product productToSave = productMapper.productDtoToProduct(dto);
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        productToSave.setUser(userRepository.findByUsername(username));
+        productToSave.setCategory(categoryRepository.findById(dto.getCategoryId())
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found for id: " + dto.getCategoryId())));
+
+        Product savedProduct = productRepository.save(productToSave);
+
+        permissionService.addPermissionForCurrentUser(dto.getClass(), dto.getId(), BasePermission.READ);
+        permissionService.addPermissionForCurrentUser(dto.getClass(), dto.getId(), BasePermission.WRITE);
+
+        return productMapper.productToProductDto(savedProduct);
     }
 
     @Override
@@ -89,20 +117,24 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    @PreAuthorize("hasPermission(#product, 'WRITE')")
-    public Product updateProduct(Product product) {
-        Optional<Product> productOptional = productRepository.findById(product.getId());
+    @PreAuthorize("hasPermission(#dto, 'WRITE')")
+    public ProductDto updateProduct(ProductDto dto) {
+        Optional<Product> productOptional = productRepository.findById(dto.getId());
 
         if (productOptional.isEmpty()) {
-            return saveProduct(product);
+            return saveProduct(dto);
         }
 
+        Product product = productMapper.productDtoToProduct(dto);
+
         Product fetchedProduct = productOptional.get();
+        fetchedProduct.setCategory(categoryRepository.findById(dto.getCategoryId())
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found for id: " + dto.getCategoryId())));
         fetchedProduct.setName(product.getName());
         fetchedProduct.setPrice(product.getPrice());
         fetchedProduct.setAmountInStock(product.getAmountInStock());
 
-        return productRepository.save(fetchedProduct);
+        return productMapper.productToProductDto(productRepository.save(fetchedProduct));
     }
 
     @Override

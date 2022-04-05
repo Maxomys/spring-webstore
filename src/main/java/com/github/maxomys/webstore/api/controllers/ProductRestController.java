@@ -1,14 +1,12 @@
 package com.github.maxomys.webstore.api.controllers;
 
 import com.github.maxomys.webstore.api.dtos.ProductDto;
-import com.github.maxomys.webstore.api.mappers.ProductMapper;
 import com.github.maxomys.webstore.services.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/product")
@@ -17,31 +15,26 @@ public class ProductRestController {
 
     private final ProductService productService;
 
-    private final ProductMapper productMapper;
-
     @GetMapping("/all")
     public List<ProductDto> getAllProducts() {
-        return productService.getProducts().stream()
-            .map(productMapper::productToProductDto)
-            .collect(Collectors.toList());
+        return productService.getProducts();
     }
 
     @GetMapping("/my")
     public List<ProductDto> getAllProductsForCurrentUser() {
-        return productService.getAllProductsForCurrentUser().stream()
-            .map(productMapper::productToProductDto)
-            .collect(Collectors.toList());
+        return productService.getAllProductsForCurrentUser();
     }
 
     @GetMapping("/{productId}")
     public ProductDto getProductById(@PathVariable Long productId) {
-        return productMapper.productToProductDto(productService.findById(productId));
+        return productService.findById(productId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void createProduct(@RequestBody ProductDto productDto) {
-        productService.saveProduct(productMapper.productDtoToProduct(productDto));
+    public ProductDto createProduct(@RequestBody ProductDto productDto) {
+        ProductDto savedProduct = productService.saveProduct(productDto);
+        return savedProduct;
     }
 
     @DeleteMapping("/{productId}")
@@ -51,7 +44,7 @@ public class ProductRestController {
 
     @PutMapping
     public void updateProduct(ProductDto productDto) {
-        productService.updateProduct(productMapper.productDtoToProduct(productDto));
+        productService.updateProduct(productDto);
     }
 
 }

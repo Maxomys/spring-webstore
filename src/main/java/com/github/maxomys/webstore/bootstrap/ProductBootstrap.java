@@ -96,7 +96,6 @@ public class ProductBootstrap implements ApplicationListener<ContextRefreshedEve
         product1.setPrice(12);
         product1.setAmountInStock(10);
         product1.setCategory(categoryPaintings);
-        product1.setCreatorName("creatorTom");
         product1.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \n" +
                 "                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.");
         productService.saveProduct(product1);
@@ -108,7 +107,6 @@ public class ProductBootstrap implements ApplicationListener<ContextRefreshedEve
         product2.setName("Product 2");
         product2.setPrice(22);
         product2.setCategory(categoryPaintings);
-        product2.setCreatorName("creatorJeff");
         product2.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \n" +
                 "                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.");
         productService.saveProduct(product2);
@@ -119,7 +117,6 @@ public class ProductBootstrap implements ApplicationListener<ContextRefreshedEve
         product3.setName("Product 3");
         product3.setPrice(41);
         product3.setCategory(categoryPaintings);
-        product3.setCreatorName("creatorTom");
         product3.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \n" +
                 "                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.");
         productService.saveProduct(product3);
@@ -131,7 +128,6 @@ public class ProductBootstrap implements ApplicationListener<ContextRefreshedEve
         product4.setName("Product 4");
         product4.setPrice(51);
         product4.setCategory(categoryPaintings);
-        product4.setCreatorName("creatorJeff");
         product4.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \n" +
                 "                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.");
         productService.saveProduct(product4);

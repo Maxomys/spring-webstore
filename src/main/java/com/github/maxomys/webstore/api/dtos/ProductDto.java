@@ -13,15 +13,16 @@ public class ProductDto {
     private Long id;
     private String name;
     private Integer price;
+    private String createdAt;
+    private Integer amountInStock;
     private Set<String> uniqueAddresses;
-    private String userName;
     private Long userId;
+    private String username;
     private String description;
     private List<Long> imageIds;
-    private String creatorName;
     private String phoneNumber;
-    private String categoryName;
     private Long categoryId;
+    private String categoryName;
     private List<Long> inquiryIds;
 
 }

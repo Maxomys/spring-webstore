@@ -24,7 +24,7 @@ public class EmailService {
         taskExecutor.execute(() -> sendEmail1(inquiry));
     }
 
-    //todo xd
+    //todo
     public void sendEmail1(Inquiry inquiry) {
         String userEmail = inquiry.getProduct().getUser().getEmail();
         String subject = inquiry.getProduct().getName();

@@ -33,8 +33,6 @@ public class Product {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "product")
     private List<Image> images = new ArrayList<>();
 
-    private String creatorName;
-
     private String phoneNumber;
 
     @ManyToOne(cascade = CascadeType.PERSIST)

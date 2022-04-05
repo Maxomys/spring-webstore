@@ -1,5 +1,7 @@
 package com.github.maxomys.webstore.services;
 
+import com.github.maxomys.webstore.api.dtos.InquiryDto;
+import com.github.maxomys.webstore.api.mappers.InquiryMapper;
 import com.github.maxomys.webstore.domain.Inquiry;
 import com.github.maxomys.webstore.domain.Product;
 import com.github.maxomys.webstore.repositories.InquiryRepository;
@@ -30,11 +32,11 @@ class InquiryServiceImplTest {
     @Mock
     EmailService emailService;
 
-    @InjectMocks
     InquiryServiceImpl inquiryService;
 
     @BeforeEach
     void setUp() {
+        inquiryService = new InquiryServiceImpl(productRepository, inquiryRepository, emailService, new InquiryMapper());
     }
 
     @Test
@@ -46,14 +48,14 @@ class InquiryServiceImplTest {
                 .inquiries(new HashSet<>())
                 .build();
 
-        Inquiry inquiry = Inquiry.builder()
+        InquiryDto inquiryDto = InquiryDto.builder()
                 .id(1L)
-                .product(product)
+                .productId(1L)
                 .build();
 
         when(productRepository.findById(anyLong())).thenReturn(Optional.of(product));
 
-        inquiryService.saveInquiry(inquiry);
+        inquiryService.saveInquiry(inquiryDto);
 
         assertTrue(product.getInquiries().size() > 0);
     }
