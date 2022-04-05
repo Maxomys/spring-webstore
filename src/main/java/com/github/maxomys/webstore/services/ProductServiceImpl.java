@@ -2,7 +2,6 @@ package com.github.maxomys.webstore.services;
 
 import com.github.maxomys.webstore.api.dtos.ProductDto;
 import com.github.maxomys.webstore.api.mappers.ProductMapper;
-import com.github.maxomys.webstore.api.mappers.ProductMapperM;
 import com.github.maxomys.webstore.domain.Category;
 import com.github.maxomys.webstore.domain.Product;
 import com.github.maxomys.webstore.exceptions.ResourceNotFoundException;
@@ -31,7 +30,7 @@ public class ProductServiceImpl implements ProductService {
     private final UserRepository userRepository;
     private final ImageService imageService;
     private final PermissionService permissionService;
-    private final ProductMapperM productMapper;
+    private final ProductMapper productMapper;
 
     @Override
     public List<ProductDto> getProducts() {

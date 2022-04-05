@@ -1,9 +1,7 @@
 package com.github.maxomys.webstore.services;
 
 import com.github.maxomys.webstore.api.dtos.ProductDto;
-import com.github.maxomys.webstore.api.mappers.ProductMapper;
-import com.github.maxomys.webstore.api.mappers.ProductMapperM;
-import com.github.maxomys.webstore.api.mappers.ProductMapperMImpl;
+import com.github.maxomys.webstore.api.mappers.ProductMapperImpl;
 import com.github.maxomys.webstore.domain.Category;
 import com.github.maxomys.webstore.domain.Product;
 import com.github.maxomys.webstore.exceptions.ResourceNotFoundException;
@@ -13,11 +11,8 @@ import com.github.maxomys.webstore.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -34,11 +29,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith({MockitoExtension.class, SpringExtension.class})
-@ContextConfiguration(classes = {ProductMapperMImpl.class})
+@ContextConfiguration(classes = {ProductMapperImpl.class})
 class ProductServiceImplTest {
 
     @Autowired
-    ProductMapperMImpl productMapper;
+    ProductMapperImpl productMapper;
 
     @Mock
     ProductRepository productRepository;
