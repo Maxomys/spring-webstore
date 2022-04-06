@@ -25,7 +25,6 @@ create table product (
     id bigint not null auto_increment,
     amount_in_stock integer,
     created_at datetime(6),
-    creator_name varchar(255),
     description longtext,
     name varchar(255),
     phone_number varchar(255),

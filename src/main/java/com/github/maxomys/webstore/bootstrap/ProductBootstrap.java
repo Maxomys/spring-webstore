@@ -1,5 +1,6 @@
 package com.github.maxomys.webstore.bootstrap;
 
+import com.github.maxomys.webstore.auth.ApplicationUserRole;
 import com.github.maxomys.webstore.auth.UserService;
 import com.github.maxomys.webstore.domain.Category;
 import com.github.maxomys.webstore.domain.Product;
@@ -56,6 +57,7 @@ public class ProductBootstrap implements ApplicationListener<ContextRefreshedEve
         userAdmin.setUsername("admin");
         userAdmin.setPassword("a");
         userAdmin.setEmail("test@test.pl");
+        userAdmin.setUserRole(ApplicationUserRole.ROLE_ADMIN);
 
         //User
         User user1 = new User();
