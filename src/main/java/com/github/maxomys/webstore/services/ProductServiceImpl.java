@@ -102,8 +102,8 @@ public class ProductServiceImpl implements ProductService {
 
         Product savedProduct = productRepository.save(productToSave);
 
-        permissionService.addPermissionForCurrentUser(dto.getClass(), dto.getId(), BasePermission.READ);
-        permissionService.addPermissionForCurrentUser(dto.getClass(), dto.getId(), BasePermission.WRITE);
+        permissionService.addPermissionForCurrentUser(savedProduct.getClass(), savedProduct.getId(), BasePermission.READ);
+        permissionService.addPermissionForCurrentUser(savedProduct.getClass(), savedProduct.getId(), BasePermission.WRITE);
 
         return productMapper.productToProductDto(savedProduct);
     }

@@ -101,7 +101,8 @@ public class ProductBootstrap implements ApplicationListener<ContextRefreshedEve
         product1.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \n" +
                 "                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.");
         productService.saveProduct(product1);
-        permissionService.addPermission("admin", product1.getClass(), product1.getId(), BasePermission.ADMINISTRATION);
+        permissionService.addPermission("admin", product1.getClass(), product1.getId(), BasePermission.READ);
+        permissionService.addPermission("admin", product1.getClass(), product1.getId(), BasePermission.WRITE);
         permissionService.addPermission("user1", product1.getClass(), product1.getId(), BasePermission.READ);
 
         Product product2 = new Product();
@@ -112,7 +113,8 @@ public class ProductBootstrap implements ApplicationListener<ContextRefreshedEve
         product2.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \n" +
                 "                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.");
         productService.saveProduct(product2);
-        permissionService.addPermission("admin", product2.getClass(), product2.getId(), BasePermission.ADMINISTRATION);
+        permissionService.addPermission("admin", product1.getClass(), product1.getId(), BasePermission.READ);
+        permissionService.addPermission("admin", product1.getClass(), product1.getId(), BasePermission.WRITE);
 
         Product product3 = new Product();
         product3.setUser(userAdmin);
@@ -122,7 +124,8 @@ public class ProductBootstrap implements ApplicationListener<ContextRefreshedEve
         product3.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \n" +
                 "                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.");
         productService.saveProduct(product3);
-        permissionService.addPermission("admin", product3.getClass(), product3.getId(), BasePermission.ADMINISTRATION);
+        permissionService.addPermission("admin", product1.getClass(), product1.getId(), BasePermission.READ);
+        permissionService.addPermission("admin", product1.getClass(), product1.getId(), BasePermission.WRITE);
         permissionService.addPermission("user1", product3.getClass(), product3.getId(), BasePermission.READ);
 
         Product product4 = new Product();
@@ -133,7 +136,8 @@ public class ProductBootstrap implements ApplicationListener<ContextRefreshedEve
         product4.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \n" +
                 "                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.");
         productService.saveProduct(product4);
-        permissionService.addPermission("admin", product4.getClass(), product4.getId(), BasePermission.ADMINISTRATION);
+        permissionService.addPermission("admin", product1.getClass(), product1.getId(), BasePermission.READ);
+        permissionService.addPermission("admin", product1.getClass(), product1.getId(), BasePermission.WRITE);
         permissionService.addPermission("user1", product4.getClass(), product4.getId(), BasePermission.WRITE);
 
 
