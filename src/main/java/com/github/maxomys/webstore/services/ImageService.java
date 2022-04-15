@@ -7,9 +7,9 @@ public interface ImageService {
 
     void saveImage(Long productId, MultipartFile file);
 
-    FileSystemResource getImageById(Long imageId);
+    byte[] getImageById(Long imageId);
 
-    FileSystemResource getThumbnailById(Long imageId);
+    byte[] getThumbnailById(Long imageId);
 
     void deleteImageById(Long imageId);
 

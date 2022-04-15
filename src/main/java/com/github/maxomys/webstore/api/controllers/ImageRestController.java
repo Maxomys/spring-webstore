@@ -16,7 +16,7 @@ public class ImageRestController {
     private final ProductService productService;
 
     @GetMapping(value = "/api/image/{imageId}", produces = "image/jpg")
-    public FileSystemResource renderImageByImageId(@PathVariable Long imageId) {
+    public byte[] renderImageByImageId(@PathVariable Long imageId) {
         return imageService.getImageById(imageId);
     }
 

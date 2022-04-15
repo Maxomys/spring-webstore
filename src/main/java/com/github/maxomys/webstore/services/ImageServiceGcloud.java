@@ -2,43 +2,37 @@ package com.github.maxomys.webstore.services;
 
 import com.github.maxomys.webstore.domain.Image;
 import com.github.maxomys.webstore.domain.Product;
+import com.github.maxomys.webstore.exceptions.ServerErrorException;
 import com.github.maxomys.webstore.repositories.ImageRepository;
 import com.github.maxomys.webstore.repositories.ProductRepository;
+import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.Bucket;
+import com.google.cloud.storage.Storage;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.imgscalr.Scalr;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.*;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
-@Profile("default")
-public class ImageServiceImpl implements ImageService {
+@Profile("cloud-storage")
+@Primary
+@RequiredArgsConstructor
+public class ImageServiceGcloud implements ImageService {
 
-    @Value("${resources.directory}")
-    String RESOURCES_DIR;
+    public static final String BUCKET_NAME = "webstore-images";
 
-    ProductRepository productRepository;
-    ImageRepository imageRepository;
-    ResourceLoader resourceLoader;
-
-    public ImageServiceImpl(ProductRepository productRepository, ImageRepository imageRepository, ResourceLoader resourceLoader) {
-        this.productRepository = productRepository;
-        this.imageRepository = imageRepository;
-        this.resourceLoader = resourceLoader;
-    }
+    private final ProductRepository productRepository;
+    private final ImageRepository imageRepository;
+    private final Storage storage;
 
     @Override
     public void saveImage(Long productId, MultipartFile file) {
@@ -58,18 +52,19 @@ public class ImageServiceImpl implements ImageService {
         try {
             BufferedImage uploadedImage = ImageIO.read(file.getInputStream());
             BufferedImage thumbnail = Scalr.resize(uploadedImage, Scalr.Mode.FIT_TO_WIDTH, 360, 360);
-            File thumbnailFile = new File(RESOURCES_DIR + newImage.getThumbnailFileName());
-            ImageIO.write(thumbnail, "jpg", thumbnailFile);
+
+            //Save to gcp storage bucket
+            Bucket bucket = storage.get(BUCKET_NAME);
+            bucket.create(newImage.getFileName(), file.getInputStream());
+
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            ImageIO.write(thumbnail, "jpg", outputStream);
+            InputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
+
+            bucket.create(newImage.getThumbnailFileName(), inputStream);
         } catch (IOException e) {
             e.printStackTrace();
-        }
-
-        Path imageFile = Paths.get(RESOURCES_DIR + newImage.getFileName());
-
-        try {
-            Files.write(imageFile, file.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
+            throw new ServerErrorException("Images not saved", e);
         }
 
         newImage.setProduct(product);
@@ -87,12 +82,10 @@ public class ImageServiceImpl implements ImageService {
 
         Image image = imageOptional.get();
 
-        try {
-            return Files.readAllBytes(Path.of(RESOURCES_DIR, image.getFileName()));
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+        Bucket bucket = storage.get(BUCKET_NAME);
+        Blob blob = bucket.get(image.getFileName());
+
+        return blob.getContent();
     }
 
     @Override
@@ -105,12 +98,10 @@ public class ImageServiceImpl implements ImageService {
 
         Image image = imageOptional.get();
 
-        try {
-            return Files.readAllBytes(Path.of(RESOURCES_DIR, image.getThumbnailFileName()));
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+        Bucket bucket = storage.get(BUCKET_NAME);
+        Blob blob = bucket.get(image.getThumbnailFileName());
+
+        return blob.getContent();
     }
 
     @Override
@@ -118,10 +109,12 @@ public class ImageServiceImpl implements ImageService {
         Image image = imageRepository.findById(imageId)
                 .orElseThrow(() -> new RuntimeException("Image Not Found!"));
 
-        File imageFile = new File(RESOURCES_DIR + image.getFileName());
-        File thumbnailFile = new File(RESOURCES_DIR + image.getThumbnailFileName());
-        imageFile.delete();
-        thumbnailFile.delete();
+        Bucket bucket = storage.get(BUCKET_NAME);
+
+        Blob imageBlob = bucket.get(image.getFileName());
+        imageBlob.delete();
+        Blob thumbnailBlob = bucket.get(image.getThumbnailFileName());
+        thumbnailBlob.delete();
 
         imageRepository.deleteById(imageId);
     }
@@ -131,11 +124,13 @@ public class ImageServiceImpl implements ImageService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("ProductNotFound"));
 
+        Bucket bucket = storage.get(BUCKET_NAME);
+
         product.getImages().forEach(image -> {
-            File imageFile = new File(RESOURCES_DIR + image.getFileName());
-            File thumbnailFile = new File(RESOURCES_DIR + image.getThumbnailFileName());
-            imageFile.delete();
-            thumbnailFile.delete();
+            Blob imageBlob = bucket.get(image.getFileName());
+            imageBlob.delete();
+            Blob thumbnailBlob = bucket.get(image.getThumbnailFileName());
+            thumbnailBlob.delete();
         });
     }
 
