@@ -16,9 +16,11 @@ import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,6 +55,11 @@ public class ProductServiceImpl implements ProductService {
         }
 
         return latestProducts;
+    }
+
+    @Override
+    public Page<ProductDto> getProductDtoPage(Pageable pageable) {
+        return productRepository.findAll(pageable).map(productMapper::productToProductDto);
     }
 
     @Override
@@ -99,6 +106,7 @@ public class ProductServiceImpl implements ProductService {
         productToSave.setUser(userRepository.findByUsername(username));
         productToSave.setCategory(categoryRepository.findById(dto.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found for id: " + dto.getCategoryId())));
+        productToSave.setCreatedAt(LocalDateTime.now());
 
         Product savedProduct = productRepository.save(productToSave);
 
@@ -110,6 +118,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product saveProduct(Product product) {
+        product.setCreatedAt(LocalDateTime.now());
         Product savedProduct = productRepository.save(product);
         permissionService.addPermissionForCurrentUser(product.getClass(), product.getId(), BasePermission.ADMINISTRATION);
         return savedProduct;

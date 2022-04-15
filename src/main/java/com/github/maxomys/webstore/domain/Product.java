@@ -3,6 +3,7 @@ package com.github.maxomys.webstore.domain;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
@@ -18,7 +19,7 @@ public class Product {
 
     private String name;
     private Integer price;
-    private Date createdAt;
+    private LocalDateTime createdAt;
     private Integer amountInStock;
 
     @ElementCollection

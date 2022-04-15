@@ -13,6 +13,8 @@ public interface ProductService {
 
     List<Product> getLatestProducts(Integer numberOfProducts);
 
+    Page<ProductDto> getProductDtoPage(Pageable pageable);
+
     Page<Product> getProductsPaginated(Pageable pageable);
 
     List<ProductDto> getAllProductsForCurrentUser();
