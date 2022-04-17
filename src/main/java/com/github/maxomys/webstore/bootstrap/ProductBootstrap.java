@@ -26,7 +26,7 @@ import java.util.Collections;
 import java.util.Date;
 
 @Component
-//@Profile("!mysql")
+@Profile("default")
 public class ProductBootstrap implements ApplicationListener<ContextRefreshedEvent> {
 
     private final ProductService productService;
