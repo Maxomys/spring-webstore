@@ -24,7 +24,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-@Profile("default")
+@Profile({"default", "mysql"})
 public class ImageServiceImpl implements ImageService {
 
     @Value("${resources.directory}")

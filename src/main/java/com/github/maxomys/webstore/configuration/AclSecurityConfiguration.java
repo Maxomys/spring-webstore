@@ -12,7 +12,6 @@ import org.springframework.security.acls.domain.*;
 import org.springframework.security.acls.jdbc.BasicLookupStrategy;
 import org.springframework.security.acls.jdbc.JdbcMutableAclService;
 import org.springframework.security.acls.jdbc.LookupStrategy;
-import org.springframework.security.acls.model.MutableAclService;
 import org.springframework.security.acls.model.PermissionGrantingStrategy;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -33,8 +32,14 @@ public class AclSecurityConfiguration {
     }
 
     @Bean
-    public MutableAclService aclService() {
-        return new JdbcMutableAclService(dataSource, lookupStrategy(), aclCache());
+    public JdbcMutableAclService aclService() {
+        JdbcMutableAclService jdbcMutableAclService = new JdbcMutableAclService(dataSource, lookupStrategy(), aclCache());
+
+        //MySQL
+        jdbcMutableAclService.setClassIdentityQuery("SELECT @@IDENTITY");
+        jdbcMutableAclService.setSidIdentityQuery("SELECT @@IDENTITY");
+
+        return jdbcMutableAclService;
     }
 
     @Bean

@@ -119,12 +119,13 @@ public class ProductServiceImpl implements ProductService {
     public Product saveProduct(Product product) {
         product.setCreatedAt(LocalDateTime.now());
         Product savedProduct = productRepository.save(product);
-        permissionService.addPermissionForCurrentUser(product.getClass(), product.getId(), BasePermission.ADMINISTRATION);
+        permissionService.addPermissionForCurrentUser(savedProduct.getClass(), savedProduct.getId(), BasePermission.READ);
+        permissionService.addPermissionForCurrentUser(savedProduct.getClass(), savedProduct.getId(), BasePermission.WRITE);
         return savedProduct;
     }
 
     @Override
-    @PreAuthorize("hasPermission(#dto, 'WRITE')")
+    @PreAuthorize("hasPermission(@productRepository.findById(#dto.id).orElseThrow(), 'WRITE')")
     public ProductDto updateProduct(ProductDto dto) {
         Optional<Product> productOptional = productRepository.findById(dto.getId());
 
