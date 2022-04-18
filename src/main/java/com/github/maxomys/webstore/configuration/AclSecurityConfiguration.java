@@ -1,10 +1,10 @@
 package com.github.maxomys.webstore.configuration;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.ehcache.EhCacheFactoryBean;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.acls.AclPermissionEvaluator;
@@ -20,8 +20,13 @@ import javax.sql.DataSource;
 @Configuration
 public class AclSecurityConfiguration {
 
-    @Autowired
-    DataSource dataSource;
+    private final DataSource dataSource;
+    private final Environment environment;
+
+    public AclSecurityConfiguration(DataSource dataSource, Environment environment) {
+        this.dataSource = dataSource;
+        this.environment = environment;
+    }
 
     @Bean
     public MethodSecurityExpressionHandler defaultMethodSecurityExpressionHandler() {
@@ -35,9 +40,12 @@ public class AclSecurityConfiguration {
     public JdbcMutableAclService aclService() {
         JdbcMutableAclService jdbcMutableAclService = new JdbcMutableAclService(dataSource, lookupStrategy(), aclCache());
 
-        //MySQL
-        jdbcMutableAclService.setClassIdentityQuery("SELECT @@IDENTITY");
-        jdbcMutableAclService.setSidIdentityQuery("SELECT @@IDENTITY");
+        // Set sidIdentityQuery and classIdentityQuery properties for mysql
+        String[] profiles = environment.getActiveProfiles();
+        if (profiles.length != 0) {
+            jdbcMutableAclService.setClassIdentityQuery("SELECT @@IDENTITY");
+            jdbcMutableAclService.setSidIdentityQuery("SELECT @@IDENTITY");
+        }
 
         return jdbcMutableAclService;
     }
