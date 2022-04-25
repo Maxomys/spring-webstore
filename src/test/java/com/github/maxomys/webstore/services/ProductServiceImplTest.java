@@ -4,6 +4,7 @@ import com.github.maxomys.webstore.api.dtos.ProductDto;
 import com.github.maxomys.webstore.api.mappers.ProductMapperImpl;
 import com.github.maxomys.webstore.domain.Category;
 import com.github.maxomys.webstore.domain.Product;
+import com.github.maxomys.webstore.domain.User;
 import com.github.maxomys.webstore.exceptions.ResourceNotFoundException;
 import com.github.maxomys.webstore.repositories.CategoryRepository;
 import com.github.maxomys.webstore.repositories.ProductRepository;
@@ -15,6 +16,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -23,10 +27,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith({MockitoExtension.class, SpringExtension.class})
 @ContextConfiguration(classes = {ProductMapperImpl.class})
@@ -44,17 +46,51 @@ class ProductServiceImplTest {
     @Mock
     UserRepository userRepository;
 
+    @Mock
+    PermissionService permissionService;
+
+    @Mock
+    SecurityContext securityContext;
+
+    @Mock
+    Authentication authentication;
+
 //    @Mock
 //    ImageService imageService;
-//
-//    @Mock
-//    PermissionService permissionService;
 
     ProductServiceImpl productService;
 
+    ProductDto validProductDto;
+    Product validProduct;
+    User validUser;
+    Category validCategory;
+
     @BeforeEach
     void setUp() {
-        productService = new ProductServiceImpl(productRepository, categoryRepository, userRepository, null, null, productMapper);
+        productService = new ProductServiceImpl(productRepository, categoryRepository, userRepository, null, permissionService, productMapper);
+        SecurityContextHolder.setContext(securityContext);
+
+        validCategory = Category.builder()
+                .description("category")
+                .id(1L)
+                .build();
+        validProductDto = ProductDto.builder()
+                .id(1L)
+                .name("productDto")
+                .price(1)
+                .amountInStock(1)
+                .categoryId(1L)
+                .build();
+        validProduct = Product.builder()
+                .id(1L)
+                .name("product")
+                .price(1)
+                .category(validCategory)
+                .amountInStock(1)
+                .build();
+        validUser = User.builder()
+                .username("username")
+                .build();
     }
 
     @Test
@@ -78,6 +114,31 @@ class ProductServiceImplTest {
         ProductDto foundProduct = productService.findById(1L);
 
         assertEquals(1, foundProduct.getId());
+    }
+
+    @Test
+    void saveProductDto() {
+        when(userRepository.findByUsername(anyString())).thenReturn(validUser);
+        when(categoryRepository.findById(anyLong())).thenReturn(Optional.of(validCategory));
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getName()).thenReturn("username");
+        when(productRepository.save(any())).thenReturn(validProduct);
+
+        ProductDto savedProductDto = productService.saveProduct(validProductDto);
+        verify(permissionService, times(2)).addPermissionForCurrentUser(any(), any(), any());
+
+        assertEquals(1L, savedProductDto.getCategoryId());
+    }
+
+    @Test
+    void saveProduct() {
+        when(productRepository.save(any(Product.class))).thenReturn(validProduct);
+
+        Product savedProduct = productService.saveProduct(validProduct);
+
+        verify(permissionService, times(2)).addPermissionForCurrentUser(any(), any(), any());
+        assertNotNull(savedProduct);
+        assertNotNull(savedProduct.getCreatedAt());
     }
 
     @Test

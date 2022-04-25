@@ -17,7 +17,4 @@ public interface TransactionMapper {
     @Mapping(target = "transactionAmount", source = "product.price")
     TransactionDto transactionToTransactionDto(Transaction transaction);
 
-
-    Transaction newTransactionDtoToTransaction (NewTransactionDto dto);
-
 }

@@ -14,10 +14,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -65,6 +67,32 @@ class InquiryServiceImplTest {
         when(inquiryRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(RuntimeException.class, () -> inquiryService.getInquiryById(1L));
+    }
+
+    @Test
+    void getInquiries() {
+        Product product = Product.builder()
+                .id(1L)
+                .amountInStock(1)
+                .description("product")
+                .inquiries(new HashSet<>())
+                .build();
+        Inquiry inquiry = Inquiry.builder()
+                .product(product)
+                .id(1L)
+                .build();
+        when(inquiryRepository.findAll()).thenReturn(List.of(inquiry));
+
+        List<InquiryDto> inquiryDtos = inquiryService.getInquiries();
+
+        assertNotNull(inquiryDtos.get(0));
+    }
+
+    @Test
+    void deleteInquiryById() {
+        inquiryService.deleteInquiryById(1L);
+
+        verify(inquiryRepository).deleteById(anyLong());
     }
 
 }
