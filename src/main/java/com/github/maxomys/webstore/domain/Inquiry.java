@@ -8,7 +8,8 @@ import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

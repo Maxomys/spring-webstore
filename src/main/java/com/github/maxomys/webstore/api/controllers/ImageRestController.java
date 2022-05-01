@@ -20,6 +20,11 @@ public class ImageRestController {
         return imageService.getImageById(imageId);
     }
 
+    @GetMapping(value = "/api/image/{imageId}/thumbnail", produces = "image/jpg")
+    public byte[] renderThumbnailByImageId(@PathVariable Long imageId) {
+        return imageService.getThumbnailById(imageId);
+    }
+
     @PostMapping("/api/product/{productId}/image")
     @ResponseStatus(HttpStatus.CREATED)
     public void handleImagePost(@PathVariable Long productId, @RequestParam("imagefile") MultipartFile multipartFile) {

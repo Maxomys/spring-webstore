@@ -52,8 +52,6 @@ public class InquiryServiceImpl implements InquiryService {
         inquiry.setCreatedOn(new Date());
 
         product.getInquiries().add(inquiry);
-
-        emailService.sendEmail(inquiry);
     }
 
     @Override
