@@ -76,13 +76,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Page<Product> getProductsByCategoryIdPaginated(Long categoryId, Pageable pageable) {
+    public Page<ProductDto> getProductDtosByCategoryIdPaginated(Long categoryId, Pageable pageable) {
         Optional<Category> categoryOptional = categoryRepository.findById(categoryId);
         if(!categoryOptional.isPresent()) {
             throw new RuntimeException("Category not found!");
         }
 
-        return productRepository.findAllByCategoryId(categoryOptional.get().getId(), pageable);
+        return productRepository.findAllByCategoryId(categoryOptional.get().getId(), pageable).map(productMapper::productToProductDto);
     }
 
     @Override

@@ -5,7 +5,6 @@ import com.github.maxomys.webstore.services.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +39,25 @@ public class ProductRestController {
         }
 
         return productService.getProductDtoPage(request);
+    }
+
+    @GetMapping("/category/{categoryId}/page")
+    public Page<ProductDto> getProductsInCategoryPaginated(
+            @PathVariable Long categoryId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size,
+            @RequestParam(defaultValue = "createdAt") String sort,
+            @RequestParam(defaultValue = "desc") String sortDir) {
+
+        PageRequest request;
+
+        if (sortDir.equals("desc")) {
+            request = PageRequest.of(page, size, Sort.by(sort).descending());
+        } else {
+            request = PageRequest.of(page, size, Sort.by(sort).ascending());
+        }
+
+        return productService.getProductDtosByCategoryIdPaginated(categoryId, request);
     }
 
     @GetMapping("/my")

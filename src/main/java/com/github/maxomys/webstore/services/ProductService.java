@@ -19,7 +19,7 @@ public interface ProductService {
 
     List<ProductDto> getAllProductsForCurrentUser();
 
-    Page<Product> getProductsByCategoryIdPaginated(Long categoryId, Pageable pageable);
+    Page<ProductDto> getProductDtosByCategoryIdPaginated(Long categoryId, Pageable pageable);
 
     ProductDto findById(Long id);
 

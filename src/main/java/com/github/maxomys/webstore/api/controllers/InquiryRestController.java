@@ -1,14 +1,12 @@
 package com.github.maxomys.webstore.api.controllers;
 
-import lombok.RequiredArgsConstructor;
 import com.github.maxomys.webstore.api.dtos.InquiryDto;
-import com.github.maxomys.webstore.api.mappers.InquiryMapper;
 import com.github.maxomys.webstore.services.InquiryService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/inquiry")
@@ -16,8 +14,6 @@ import java.util.stream.Collectors;
 public class InquiryRestController {
 
     private final InquiryService inquiryService;
-
-    private final InquiryMapper inquiryMapper;
 
     @GetMapping("/all")
     public List<InquiryDto> getAllInquiries() {
