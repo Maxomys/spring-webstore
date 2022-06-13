@@ -26,11 +26,6 @@ public class UserRestController {
         return userService.createNewUser(dto, ApplicationUserRole.ROLE_USER);
     }
 
-    @PostMapping("/admin")
-    @ResponseStatus(HttpStatus.CREATED)
-    public UserDto createAdminUser(@RequestBody UserDto dto) {
-        return userService.createNewUser(dto, ApplicationUserRole.ROLE_ADMIN);
-    }
 
     @GetMapping("/all")
     public List<UserDto> getAllUsers() {
