@@ -21,6 +21,8 @@ public interface ProductService {
 
     Page<ProductDto> getProductDtosByCategoryIdPaginated(Long categoryId, Pageable pageable);
 
+    List<ProductDto> searchProductsByName(String name);
+
     ProductDto findById(Long id);
 
     ProductDto saveProduct(ProductDto dto);

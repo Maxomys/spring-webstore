@@ -13,4 +13,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     List<Product> findAllByUser_Username(String username);
 
+    List<Product> findAllByNameContainingIgnoreCase(String name);
+
 }

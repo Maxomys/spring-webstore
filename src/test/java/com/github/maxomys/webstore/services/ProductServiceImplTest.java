@@ -182,4 +182,11 @@ class ProductServiceImplTest {
         assertEquals("test", productCaptor.getValue().getUniqueAddresses().stream().findFirst().get());
     }
 
+    @Test
+    void searchProductsByName() {
+        productService.searchProductsByName("product");
+
+        verify(productRepository).findAllByNameContainingIgnoreCase(anyString());
+    }
+
 }

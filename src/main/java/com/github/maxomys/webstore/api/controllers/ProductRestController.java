@@ -70,6 +70,11 @@ public class ProductRestController {
         return productService.findById(productId);
     }
 
+    @GetMapping("/search/{query}")
+    public List<ProductDto> searchProductsByName(@PathVariable String query) {
+        return productService.searchProductsByName(query);
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ProductDto createProduct(@RequestBody ProductDto productDto) {

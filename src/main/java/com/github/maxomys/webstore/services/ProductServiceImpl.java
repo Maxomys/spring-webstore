@@ -86,10 +86,17 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public List<ProductDto> searchProductsByName(String name) {
+        return productRepository.findAllByNameContainingIgnoreCase(name).stream()
+                .map(productMapper::productToProductDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public ProductDto findById(Long id) {
         Optional<Product> productOptional = productRepository.findById(id);
 
-        if (!productOptional.isPresent()) {
+        if (productOptional.isEmpty()) {
             throw new ResourceNotFoundException("Product not found!");
         }
 

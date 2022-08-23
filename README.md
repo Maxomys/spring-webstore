@@ -2,7 +2,6 @@
 
 ## Spring boot ecommerce rest api
 
-[Demo](https://webstore-frontend-o4bnl4pqra-lz.a.run.app)
 
 
 Spring Boot ecommerce project.
