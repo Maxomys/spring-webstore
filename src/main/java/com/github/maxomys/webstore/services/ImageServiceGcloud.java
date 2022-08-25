@@ -11,6 +11,7 @@ import com.google.cloud.storage.Storage;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.imgscalr.Scalr;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ImageServiceGcloud implements ImageService {
 
-    public static final String BUCKET_NAME = "webstore-images";
+    @Value("${BUCKET_NAME}")
+    public String BUCKET_NAME;
 
     private final ProductRepository productRepository;
     private final ImageRepository imageRepository;
