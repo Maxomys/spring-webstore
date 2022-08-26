@@ -106,7 +106,7 @@ public class ImageServiceImpl implements ImageService {
         Image image = imageOptional.get();
 
         try {
-            return Files.readAllBytes(Path.of(RESOURCES_DIR, image.getThumbnailFileName()));
+            return Files.readAllBytes(Path.of(RESOURCES_DIR + "\\", image.getThumbnailFileName()));
         } catch (IOException e) {
             e.printStackTrace();
             return null;
